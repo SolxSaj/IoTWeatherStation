@@ -41,17 +41,6 @@ function getWeatherDatabase(): MongoDB\Database
     $settings = getMongoSettings();
     $client = new MongoDB\Client($settings['uri']);
 
-    try {
-    $client = new MongoDB\Client($config['uri']);
-    $db = $client->selectDatabase($config['database']);
-    // Prueba rápida de comando
-    $db->command(['ping' => 1]);
-    echo "¡Conexión exitosa a MongoDB Atlas!";
-} catch (Exception $e) {
-    echo "Fallo crítico al conectar: " . $e->getMessage();
-}
-exit;
-
     return $client->selectDatabase($settings['database'] ?? 'IoTWheatherStation');
 }
 
