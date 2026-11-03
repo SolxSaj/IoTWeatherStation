@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'uri' => 'mongodb+srv://<usuario>:<contrasena>@<cluster>/?retryWrites=true&w=majority',
+    'uri' => getenv('MONGODB_URI') ?:'',
     'database' => 'IoTWheatherStation',
     'collection' => 'IoTWheatherStation',
-    'apiToken' => '',
+    'apiToken' => getenv('TOKEN') ?: '',
 ];
