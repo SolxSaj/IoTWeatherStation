@@ -11,20 +11,31 @@ require_once $autoload;
 function getMongoSettings(): array
 {
     $settingsFile = __DIR__ . '/../mongodb.config.local.php';
+    $settings = [];
 
-    if (!is_file($settingsFile)) {
-        throw new RuntimeException('Copia mongodb.config.example.php como mongodb.config.local.php y configura tu URI.');
+    if (is_file($settingsFile)) {
+        $localSettings = require $settingsFile;
+        if (!is_array($localSettings)) {
+            throw new RuntimeException('mongodb.config.local.php debe devolver un arreglo de configuración.');
+        }
+        $settings = $localSettings;
     }
 
-    $settings = require $settingsFile;
-    if (!is_array($settings)) {
-        throw new RuntimeException('mongodb.config.local.php debe devolver un arreglo de configuración.');
-    }
-
-    $uri = $settings['uri'] ?? null;
+    $environmentUri = getenv('MONGODB_URI');
+    $uri = is_string($environmentUri) && trim($environmentUri) !== ''
+        ? $environmentUri
+        : ($settings['uri'] ?? null);
 
     if (!is_string($uri) || trim($uri) === '') {
-        throw new RuntimeException('Configura una URI válida en mongodb.config.local.php.');
+        throw new RuntimeException('Configura MONGODB_URI en el entorno o en mongodb.config.local.php.');
+    }
+
+    $settings['uri'] = $uri;
+    $environmentToken = getenv('TOKEN');
+    if (is_string($environmentToken) && trim($environmentToken) !== '') {
+        $settings['apiToken'] = $environmentToken;
+    } else {
+        $settings['apiToken'] = $settings['apiToken'] ?? '';
     }
 
     return $settings;
