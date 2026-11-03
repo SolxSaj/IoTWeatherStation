@@ -15,7 +15,8 @@ RUN chown -R www-data:www-data /var/www/html
 ENV PORT=8080
 RUN sed -i 's/80/${PORT}/g' /etc/apache2/ports.conf /etc/apache2/sites-available/000-default.conf
 
-# Habilitar mod_rewrite si tu proyecto lo usa
-RUN a2enmod rewrite
+# Permitir que Apache pase las variables de entorno de Render a PHP
+RUN echo "PassEnv MONGODB_URI" >> /etc/apache2/apache2.conf
+RUN echo "PassEnv TOKEN" >> /etc/apache2/apache2.conf
 
 EXPOSE 8080
